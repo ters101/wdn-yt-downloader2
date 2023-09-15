@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+    <!-- Add Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <!-- Replace the src attribute with the path to your image -->
+                <img src="{{ url_for('static', filename='wdn.png') }}" width="200">
+                <br><br><br>
+                <h2>Youtube Downloader</h2>
+                <p>Download any Youtube Video</p>
+                <br>
+                <form id="downloadForm" action="/download" method="GET">
+                    <div style="margin-bottom: 15px;" class="form-group">
+                        <input type="text" class="form-control" id="link" name="url" placeholder="YouTube Link" required>
+                    </div>
+                    <select style="margin-bottom: 5px;" class="form-control" id="format" name="format" onchange="toggleResolutionDropdown()">
+                      <option value="mp3">mp3</option>
+                      <option value="mp4">mp4</option>
+                  </select>
+                    <div class="form-group" id="resolutionDiv" style="display: none;">
+                      <select class="form-control" id="resolution" name="resolution">
+                          <option value="720p">720p</option>
+                          <option value="480p">480p</option>
+                          <option value="360p">360p</option>
+                          <option value="240p">240p</option>
+                      </select>
+                  </div>
+                  <div style="margin-top: 10px;">
+                    <div  class="alert alert-info" id="downloadAlert" style="display: none;">
+                      Downloading, please wait...
+                    </div>
+                  </div>
+                  
+                  
+                    <button style="margin-top: 15px;" type="button" class="btn btn-primary btn-block" onclick="download()">Download</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+function download() {
+  let link = document.getElementById('link').value;
+  let format = document.getElementById('format').value;
+  let resolution = document.getElementById('resolution').value;
+  let downloadAlert = document.getElementById('downloadAlert'); // Get the alert element
+
+  if (!link) {
+    alert("Please provide a YouTube link.");
+    return; // Exit the function if the link is empty
+  }
+
+  // Show the alert
+  downloadAlert.style.display = 'block';
+
+  fetch('/download?url=' + link + '&format=' + format + '&resolution=' + resolution)
+    .then(response => response.blob())
+    .then(file => {
+      let url = window.URL.createObjectURL(file);
+      let a = document.createElement('a');
+      a.href = url;
+      a.download = 'video.' + format;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      // Hide the alert after the download
+      downloadAlert.style.display = 'none';
+    });
+}
+
+function toggleResolutionDropdown() {
+    let format = document.getElementById('format').value;
+    let resolutionDiv = document.getElementById('resolutionDiv');
+
+    if (format === 'mp4') {
+        resolutionDiv.style.display = 'block';
+    } else {
+        resolutionDiv.style.display = 'none';
+    }
+}
+</script>
+      
+<!-- Add Bootstrap JS and jQuery (optional) if needed -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
