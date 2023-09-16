@@ -52,5 +52,10 @@ def download():
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    site_config = {
+        "host": "0.0.0.0",  # Allow incoming requests from all IP addresses
+        "port": 1338,       # Specify the desired port for your app
+        "debug": False
+    }
+    app.run(**site_config)
 
